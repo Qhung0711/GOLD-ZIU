@@ -1,0 +1,17 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"><title>Gold Miner</title><link rel="stylesheet" href="style.css"></head><body>
+<div id="app">
+<div id="hud"><span>LEVEL: <b id="hLevel">1</b></span><span>TARGET: $<b id="hTarget">0</b></span><span>MONEY: $<b id="hMoney">0</b></span><span>TIME: <b id="hTime">0</b></span></div>
+<div id="prog"><i id="progF"></i></div>
+<canvas id="c" width="800" height="600"></canvas>
+<div id="bar"><button data-act="go">GO</button><button data-act="dyn">DYNAMITE x<b id="hDyn">0</b></button><button data-act="pause">PAUSE</button></div>
+<div id="screens">
+<div class="screen" id="s-menu"><h1>GOLD MINER</h1><div id="tag">Dig deep. Get rich. Beat the clock!</div><button data-act="play">PLAY</button><button data-act="menuShop">SHOP</button><button data-act="how">HOW TO PLAY</button><button data-act="sound" id="bSound">SOUND ON</button><button data-act="reset">RESET SAVE</button></div>
+<div class="screen" id="s-how" hidden><h2>HOW TO PLAY</h2><p>SPACE / click / GO: drop the hook.<br>D / DYNAMITE: blast the item you are hauling.<br>ESC: pause.<br>Reach the target money before time runs out.<br>Heavy items = slow pull.</p><button data-act="menu">BACK</button></div>
+<div class="screen" id="s-shop" hidden><h2>SHOP</h2><div>Wallet: $<b id="sWallet">0</b></div><div id="shopList"></div><button data-act="shopdone" id="bShopDone">CONTINUE</button></div>
+<div class="screen" id="s-complete" hidden><h2 id="cTitle">LEVEL COMPLETE!</h2><div id="cStars"></div><div>Money earned: $<b id="cEarned">0</b></div><button data-act="next" id="bNext">NEXT LEVEL</button><button data-act="shop">SHOP</button><button data-act="share">SHARE SCORE</button></div>
+<div class="screen" id="s-timeup" hidden><h2>TIME'S UP!</h2><div>So close! Give it another go.</div><div>Target: $<b id="tTarget">0</b><br>Your Money: $<b id="tMoney">0</b></div><button data-act="retry">RETRY</button><button data-act="share">SHARE SCORE</button><button data-act="menu">MAIN MENU</button></div>
+<div class="screen" id="s-pause" hidden><h2>PAUSED</h2><button data-act="pause">RESUME</button><button data-act="retry">RESTART LEVEL</button><button data-act="menu">MAIN MENU</button></div>
+<div class="screen" id="s-confirm" hidden><h2>Delete all progress?</h2><button data-act="resetYes">YES, RESET</button><button data-act="menu">CANCEL</button></div>
+</div></div>
+<script src="js/storage.js"></script><script src="js/audio.js"></script><script src="js/particles.js"></script><script src="js/items.js"></script><script src="js/level.js"></script><script src="js/hook.js"></script><script src="js/player.js"></script><script src="js/shop.js"></script><script src="js/ui.js"></script><script src="js/game.js"></script><script src="js/main.js"></script>
+</body></html>
