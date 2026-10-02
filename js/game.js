@@ -14,11 +14,15 @@ FX.text(400,300,'LEVEL '+this.n,'#fff',42,2);if(this.level.mover)FX.text(400,345
 go(){if(this.state==='PLAYING')Hook.shoot()},
 dynamite(){if(this.state!=='PLAYING')return;const it=Hook.blast();if(!it)return;this.items.splice(this.items.indexOf(it),1);FX.burst(it.x,it.y,40,'#ff8a1f',260,.7);FX.burst(it.x,it.y,20,'#ffe14d',200,.5);Sfx.play('dynamite');this.shake=.3;UI.hud()},
 togglePause(){if(this.state==='PLAYING'){this.state='PAUSED';UI.show('pause')}else if(this.state==='PAUSED'){this.state='PLAYING';UI.hide()}},
-collect(it){this.items.splice(this.items.indexOf(it),1);let v=it.value;
-if(it.kind!=='rock'){this.streak++;if(this.streak>=2){const b=Math.round(v*.1*Math.min(this.streak-1,5)); // combo bonus for consecutive good catches
+collect(it){this.items.splice(this.items.indexOf(it),1);let v=it.value;const dia=it.kind==='diamond'||it.kind==='pigd';
+if(it.kind!=='rock'&&it.kind!=='pig'){this.streak++;if(this.streak>=2){const b=Math.round(v*.1*Math.min(this.streak-1,5)); // combo bonus for consecutive good catches
 v+=b;FX.text(Hook.OX+100,150,'COMBO x'+this.streak+' +$'+b,'#ff6bd6')}}else this.streak=0;
-this.earned+=v;Sfx.play(it.kind==='diamond'?'diamond':'gold');FX.text(Hook.OX,110,'+$'+v);FX.burst(Hook.OX,90,it.kind==='diamond'?30:14,it.kind==='diamond'?'#aef':'#ffe14d',180);if(it.weight>=4)this.shake=.2;
-if(it.kind==='diamond'||it.weight>=4||this.streak>=3){FX.text(Hook.OX-55,20,this.lines[Math.random()*this.lines.length|0],'#fff3a0',18,1.8);for(let i=0;i<5;i++)FX.text(Hook.OX-70+Math.random()*40,50-Math.random()*20,'\u2605','#ffd21a',22,1.4)}},
+this.earned+=v;Sfx.play(dia?'diamond':'gold');FX.text(Hook.OX,110,'+$'+v);FX.burst(Hook.OX,90,dia?30:14,dia?'#aef':'#ffe14d',180);if(it.weight>=4)this.shake=.2;
+if(dia||it.weight>=4||this.streak>=3){FX.text(Hook.OX-55,20,this.lines[Math.random()*this.lines.length|0],'#fff3a0',18,1.8);for(let i=0;i<5;i++)FX.text(Hook.OX-70+Math.random()*40,50-Math.random()*20,'\u2605','#ffd21a',22,1.4)}},
+explode(t){const q=[t],gone=new Set(); // TNT barrel: destroys everything within 100px, chains to other barrels
+while(q.length){const a=q.pop();if(gone.has(a))continue;gone.add(a);FX.burst(a.x,a.y,35,'#ff8a1f',280,.7);FX.burst(a.x,a.y,18,'#ffe14d',200,.5);
+for(const o of this.items)if(!gone.has(o)&&Math.hypot(o.x-a.x,o.y-a.y)<100){if(o.kind==='tnt')q.push(o);else{gone.add(o);FX.burst(o.x,o.y,10,'#999',120,.5)}}}
+this.items=this.items.filter(o=>!gone.has(o));this.streak=0;this.shake=.5;Sfx.play('dynamite');FX.text(t.x,t.y-30,'BOOM!','#ff5030',34,1.2)},
 end(){const L=this.level;if(this.earned>=L.target){this.state='COMPLETE';Store.d.money+=this.earned;Store.d.unlocked=Math.max(Store.d.unlocked,Math.min(this.n+1,LEVELS.length));
 const st=this.earned>=L.target*1.5?3:this.earned>=L.target*1.2?2:1;Store.d.stars[this.n]=Math.max(Store.d.stars[this.n]||0,st);Store.save();FX.confetti();Sfx.play('win');
 const last=this.n>=LEVELS.length;document.getElementById('cTitle').textContent=last?'YOU WIN! ALL LEVELS DONE':'LEVEL COMPLETE!';document.getElementById('cStars').textContent='★'.repeat(st)+'☆'.repeat(3-st);document.getElementById('cEarned').textContent=this.earned;document.getElementById('bNext').textContent=last?'REPLAY LEVEL 10':'NEXT LEVEL';UI.show('complete')}
@@ -26,7 +30,7 @@ else{this.state='TIMEUP';Sfx.play('lose');document.getElementById('tTarget').tex
 document.querySelectorAll('[data-act=share]').forEach(b=>b.textContent='SHARE SCORE')},
 update(dt){if(this.state==='PAUSED')return;this.time+=dt;FX.update(dt);if(this.shake>0)this.shake-=dt;if(this.state!=='PLAYING')return;
 this.timeLeft-=dt;for(const it of this.items)if(it.vx&&it!==Hook.item){it.x+=it.vx*dt;if(it.x<it.minX||it.x>it.maxX)it.vx=-it.vx}
-Hook.update(dt,this.items,it=>this.collect(it));
+Hook.update(dt,this.items,it=>this.collect(it),t=>this.explode(t));
 if(Hook.state==='RETRACTING'&&this.prevHook!=='RETRACTING')this.streak=0; // missed -> combo lost
 this.prevHook=Hook.state;
 if(!this.reached&&this.earned>=this.level.target){this.reached=true;FX.text(400,300,'TARGET REACHED!','#7dff7d');FX.confetti();Sfx.play('win')}
